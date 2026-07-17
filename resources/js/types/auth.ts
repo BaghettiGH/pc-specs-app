@@ -32,3 +32,14 @@ export type TwoFactorSetupData = {
 export type TwoFactorSecretKey = {
     secretKey: string;
 };
+
+export interface LoginFormData {
+    username: string;
+    password: string;
+    [key: string]: string;
+}
+
+export interface LoginFormErrors {
+    username?: string;
+    password?: string;
+}

@@ -2,7 +2,7 @@ import { Form, Head, setLayoutProps } from '@inertiajs/react';
 import { REGEXP_ONLY_DIGITS } from 'input-otp';
 import { useMemo, useState } from 'react';
 import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
     InputOTP,
@@ -104,13 +104,13 @@ export default function TwoFactorChallenge() {
                                 </div>
                             )}
 
-                            <Button
+                            {/* <Button
                                 type="submit"
                                 className="w-full"
                                 disabled={processing}
                             >
                                 Continue
-                            </Button>
+                            </Button> */}
 
                             <div className="text-center text-sm text-muted-foreground">
                                 <span>or you can </span>
