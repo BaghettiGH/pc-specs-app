@@ -285,156 +285,371 @@ export function Dashboard() {
     }, [] as EmployeeRecord[]);
 
     return (
-        <div className="w-full max-w-5xl px-4 animate-fade-in-up flex flex-col gap-6 pb-12">
-            {/* Header section */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-red-500 bg-clip-text text-transparent">
-                        Hardware Inventory Portal
-                    </h1>
-                    <p className="text-sm text-slate-500 mt-1">
-                        Drag and drop a configurations JSON file to load and display system specification sheets
-                    </p>
+        <div className="w-full max-w-6xl px-4 animate-fade-in-up flex flex-col md:flex-row gap-8 items-start pb-12">
+            
+            {/* Sidebar Navigation - Left Column */}
+            <div className="w-full md:w-60 shrink-0 flex flex-col gap-5 md:sticky md:top-10">
+                {/* Branding Panel */}
+                <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-1.5 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
+                    <h2 className="text-lg font-extrabold text-slate-800 tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-red-500 bg-clip-text text-transparent">
+                        Specs Inventory
+                    </h2>
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Management Hub</p>
                 </div>
-                <Button variant="secondary" loading={loggingOut} onClick={handleLogout} className="self-start md:self-auto gap-2 bg-white text-slate-800 hover:bg-slate-50 border-slate-200">
-                    <LogOut className="h-4 w-4" />
-                    Sign Out
-                </Button>
+
+                {/* Sidebar Navigation List */}
+                <div className="glass-panel p-4 rounded-2xl relative flex flex-col gap-2 overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 pb-1 block">Menu Options</span>
+                    
+                    <button
+                        onClick={() => setActiveSubTab('allocations')}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all focus:outline-none ${
+                            activeSubTab === 'allocations'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
+                                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                        <List className="h-4 w-4 shrink-0" />
+                        <span>Allocation Logs</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveSubTab('catalog')}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all focus:outline-none ${
+                            activeSubTab === 'catalog'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
+                                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                        <Cpu className="h-4 w-4 shrink-0" />
+                        <span>Hardware Catalog</span>
+                    </button>
+
+                    <button
+                        onClick={() => setActiveSubTab('employees')}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl transition-all focus:outline-none ${
+                            activeSubTab === 'employees'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/10'
+                                : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
+                        }`}
+                    >
+                        <UserCheck className="h-4 w-4 shrink-0" />
+                        <span>Employee Directory</span>
+                    </button>
+
+                    <hr className="border-slate-100 my-1" />
+
+                    <button
+                        onClick={handleLogout}
+                        disabled={loggingOut}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 hover:text-red-700 hover:bg-red-50 transition-all focus:outline-none"
+                    >
+                        <LogOut className="h-4 w-4 shrink-0" />
+                        <span>{loggingOut ? 'Signing Out...' : 'Sign Out'}</span>
+                    </button>
+                </div>
             </div>
 
-            {/* Notification Toast */}
-            {toastMessage && (
-                <div className="bg-blue-50 border border-blue-100 text-blue-800 px-4 py-3 rounded-xl text-sm font-medium animate-fade-in-up flex justify-between items-center z-20">
-                    <span>{toastMessage}</span>
-                    <button onClick={() => setToastMessage(null)} className="text-blue-500 hover:text-blue-800 focus:outline-none">Dismiss</button>
-                </div>
-            )}
-
-            {/* Drag & Drop File Zone */}
-            <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => document.getElementById('json-file-input')?.click()}
-                className={`glass-panel p-8 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-4 text-center cursor-pointer transition-all duration-200 relative overflow-hidden ${
-                    isDragging 
-                        ? 'border-blue-500 bg-blue-500/5 shadow-[0_0_20px_rgba(59,130,246,0.1)]' 
-                        : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50/50'
-                }`}
-            >
-                {/* Visual top light bar */}
-                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
+            {/* Main Content Area - Right Column */}
+            <div className="flex-1 flex flex-col gap-6 w-full">
                 
-                <input 
-                    type="file" 
-                    id="json-file-input" 
-                    accept=".json" 
-                    className="hidden" 
-                    onChange={handleFileSelect} 
-                />
+                {/* Notification Toast */}
+                {toastMessage && (
+                    <div className="bg-blue-50 border border-blue-100 text-blue-800 px-4 py-3 rounded-xl text-sm font-medium animate-fade-in-up flex justify-between items-center z-20">
+                        <span>{toastMessage}</span>
+                        <button onClick={() => setToastMessage(null)} className="text-blue-500 hover:text-blue-800 focus:outline-none">Dismiss</button>
+                    </div>
+                )}
 
-                <div className={`h-14 w-14 rounded-2xl flex items-center justify-center border transition-all duration-200 ${
-                    isDragging 
-                        ? 'bg-blue-500 border-blue-500 text-white scale-110 shadow-[0_0_15px_rgba(59,130,246,0.4)]' 
-                        : 'bg-slate-100 border-slate-200 text-blue-600'
-                }`}>
-                    <UploadCloud className="h-7 w-7" />
-                </div>
+                {/* Drag & Drop File Zone */}
+                <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={() => document.getElementById('json-file-input')?.click()}
+                    className={`glass-panel p-8 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-4 text-center cursor-pointer transition-all duration-200 relative overflow-hidden ${
+                        isDragging 
+                            ? 'border-blue-500 bg-blue-500/5 shadow-[0_0_20px_rgba(59,130,246,0.1)]' 
+                            : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50/50'
+                    }`}
+                >
+                    {/* Visual top light bar */}
+                    <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
+                    
+                    <input 
+                        type="file" 
+                        id="json-file-input" 
+                        accept=".json" 
+                        className="hidden" 
+                        onChange={handleFileSelect} 
+                    />
 
-                <div>
-                    <h3 className="font-bold text-slate-800 text-base">Drag & Drop Specifications JSON</h3>
-                    <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                        Drop a valid <code>.json</code> specifications file here, or click to browse.
-                    </p>
-                </div>
-            </div>
-
-            {totalDevices > 0 && (
-                <>
-                    {/* Navigation Sub-Tabs */}
-                    <div className="flex border-b border-slate-200 gap-6 text-sm font-semibold mt-2">
-                        <button
-                            onClick={() => setActiveSubTab('allocations')}
-                            className={`pb-3 flex items-center gap-2 border-b-2 transition-all focus:outline-none ${
-                                activeSubTab === 'allocations' 
-                                    ? 'border-blue-600 text-blue-600' 
-                                    : 'border-transparent text-slate-400 hover:text-slate-600'
-                            }`}
-                        >
-                            <List className="h-4 w-4" />
-                            Employee Allocations ({totalDevices})
-                        </button>
-                        <button
-                            onClick={() => setActiveSubTab('catalog')}
-                            className={`pb-3 flex items-center gap-2 border-b-2 transition-all focus:outline-none ${
-                                activeSubTab === 'catalog' 
-                                    ? 'border-blue-600 text-blue-600' 
-                                    : 'border-transparent text-slate-400 hover:text-slate-600'
-                            }`}
-                        >
-                            <Cpu className="h-4 w-4" />
-                            Hardware Catalog
-                        </button>
-                        <button
-                            onClick={() => setActiveSubTab('employees')}
-                            className={`pb-3 flex items-center gap-2 border-b-2 transition-all focus:outline-none ${
-                                activeSubTab === 'employees' 
-                                    ? 'border-blue-600 text-blue-600' 
-                                    : 'border-transparent text-slate-400 hover:text-slate-600'
-                            }`}
-                        >
-                            <UserCheck className="h-4 w-4" />
-                            Employee Directory ({employeeCatalog.length})
-                        </button>
+                    <div className={`h-14 w-14 rounded-2xl flex items-center justify-center border transition-all duration-200 ${
+                        isDragging 
+                            ? 'bg-blue-500 border-blue-500 text-white scale-110 shadow-[0_0_15px_rgba(59,130,246,0.4)]' 
+                            : 'bg-slate-100 border-slate-200 text-blue-600'
+                    }`}>
+                        <UploadCloud className="h-7 w-7" />
                     </div>
 
-                    {/* Sub-Tab Contents */}
-                    {activeSubTab === 'allocations' ? (
-                        /* Allocations logs list */
-                        <div className="glass-panel p-6 rounded-2xl relative flex flex-col gap-4">
-                            <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
-                            <div>
-                                <h3 className="font-bold text-slate-800 text-sm">Asset Allocation Logs</h3>
-                                <p className="text-[10px] text-slate-500 mt-0.5">Database records of employee hardware allocations</p>
-                            </div>
+                    <div>
+                        <h3 className="font-bold text-slate-800 text-base">Drag & Drop Specifications JSON</h3>
+                        <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                            Drop a valid <code>.json</code> specifications file here, or click to browse.
+                        </p>
+                    </div>
+                </div>
 
-                            {fetchingSpecs ? (
-                                <div className="py-12 flex flex-col items-center justify-center gap-3">
-                                    <div className="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full" />
-                                    <span className="text-xs text-slate-500">Loading specs database...</span>
+                {totalDevices > 0 ? (
+                    <>
+                        {/* Sub-Tab Contents */}
+                        {activeSubTab === 'allocations' ? (
+                            /* Allocations logs list */
+                            <div className="glass-panel p-6 rounded-2xl relative flex flex-col gap-4">
+                                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
+                                <div>
+                                    <h3 className="font-bold text-slate-800 text-sm">Asset Allocation Logs</h3>
+                                    <p className="text-[10px] text-slate-500 mt-0.5">Database records of employee hardware allocations</p>
                                 </div>
-                            ) : (
+
+                                {fetchingSpecs ? (
+                                    <div className="py-12 flex flex-col items-center justify-center gap-3">
+                                        <div className="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full" />
+                                        <span className="text-xs text-slate-500">Loading specs database...</span>
+                                    </div>
+                                ) : (
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left border-collapse text-xs">
+                                            <thead>
+                                                <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider font-mono text-[10px]">
+                                                    <th className="py-2.5 px-3">Employee Name</th>
+                                                    <th className="py-2.5 px-3">Device Model (Motherboard)</th>
+                                                    <th className="py-2.5 px-3">Computer Key (Serial)</th>
+                                                    <th className="py-2.5 px-3 text-right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-100">
+                                                {specifications.map((spec) => (
+                                                    <tr key={spec.id} className="hover:bg-slate-50/50 transition-colors text-slate-700">
+                                                        <td className="py-3.5 px-3">
+                                                            <span className="font-bold text-slate-800 block leading-tight">{spec.employee_name}</span>
+                                                            <span className="text-[10px] text-slate-400">{spec.employee_email}</span>
+                                                        </td>
+                                                        <td className="py-3.5 px-3 font-medium text-slate-600">{spec.device_name}</td>
+                                                        <td className="py-3.5 px-3 font-mono text-[10px] text-blue-600 font-semibold">{spec.serial_number}</td>
+                                                        <td className="py-3.5 px-3 text-right flex justify-end gap-1.5">
+                                                            <button
+                                                                onClick={() => setSelectedSpec(spec)}
+                                                                className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-lg transition-all"
+                                                                title="View Spec Sheet"
+                                                            >
+                                                                <Eye className="h-3.5 w-3.5" />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleDeleteSpec(spec.id)}
+                                                                className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-lg transition-all"
+                                                                title="Delete"
+                                                            >
+                                                                <Trash2 className="h-3.5 w-3.5" />
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        ) : activeSubTab === 'catalog' ? (
+                            /* Deployed physical hardware catalog view */
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                
+                                {/* Deployed CPUs */}
+                                <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-4 h-[430px]">
+                                    <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <div className="h-8 w-8 rounded-lg bg-blue-50 text-blue-500 border border-blue-100 flex items-center justify-center">
+                                            <Cpu className="h-4 w-4" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-slate-800 text-sm">Processors (CPUs)</h3>
+                                            <p className="text-[10px] text-slate-400">Deployed central processors</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 overflow-y-auto pr-1 pb-2">
+                                        {cpuCatalog.map((item, idx) => (
+                                            <div key={idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-2 text-xs">
+                                                <div className="flex justify-between items-start gap-3">
+                                                    <span className="font-bold text-slate-700 leading-snug break-words">{item.name}</span>
+                                                    <span className="shrink-0 bg-blue-100 border border-blue-200 text-blue-800 font-bold px-2 py-0.5 rounded text-[10px]">
+                                                        {item.count} Deployed
+                                                    </span>
+                                                </div>
+                                                <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                                                    <span>Hosts:</span>
+                                                    {item.hosts.map((host, hIdx) => (
+                                                        <span key={hIdx} className="bg-slate-200/60 px-1.5 py-0.5 rounded text-slate-600 font-medium font-mono">
+                                                            {host}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Deployed Motherboards */}
+                                <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-4 h-[430px]">
+                                    <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <div className="h-8 w-8 rounded-lg bg-purple-50 text-purple-500 border border-purple-100 flex items-center justify-center">
+                                            <Laptop className="h-4 w-4" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-slate-800 text-sm">Motherboards / Devices</h3>
+                                            <p className="text-[10px] text-slate-400">Recorded hardware products</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 overflow-y-auto pr-1 pb-2">
+                                        {motherboardCatalog.map((item, idx) => (
+                                            <div key={idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-2 text-xs">
+                                                <div className="flex justify-between items-start gap-3">
+                                                    <span className="font-bold text-slate-700 leading-snug break-words">{item.name}</span>
+                                                    <span className="shrink-0 bg-purple-100 border border-purple-200 text-purple-800 font-bold px-2 py-0.5 rounded text-[10px]">
+                                                        {item.count} Deployed
+                                                    </span>
+                                                </div>
+                                                <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                                                    <span>Hosts:</span>
+                                                    {item.hosts.map((host, hIdx) => (
+                                                        <span key={hIdx} className="bg-slate-200/60 px-1.5 py-0.5 rounded text-slate-600 font-medium font-mono">
+                                                            {host}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Deployed RAM configurations */}
+                                <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-4 h-[430px]">
+                                    <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-500 border border-emerald-100 flex items-center justify-center">
+                                            <Layers className="h-4 w-4" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-slate-800 text-sm">Memory Blocks (RAM)</h3>
+                                            <p className="text-[10px] text-slate-400">Deployed dynamic RAM quantities</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 overflow-y-auto pr-1 pb-2">
+                                        {ramCatalog.map((item, idx) => (
+                                            <div key={idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-2 text-xs">
+                                                <div className="flex justify-between items-start gap-3">
+                                                    <span className="font-bold text-slate-700 leading-snug break-words">{item.name} Configurations</span>
+                                                    <span className="shrink-0 bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">
+                                                        {item.count} Deployed
+                                                    </span>
+                                                </div>
+                                                <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                                                    <span>Hosts:</span>
+                                                    {item.hosts.map((host, hIdx) => (
+                                                        <span key={hIdx} className="bg-slate-200/60 px-1.5 py-0.5 rounded text-slate-600 font-medium font-mono">
+                                                            {host}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Deployed Storage Drives */}
+                                <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-4 h-[430px]">
+                                    <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-red-500/20 to-transparent" />
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <div className="h-8 w-8 rounded-lg bg-red-50 text-red-500 border border-red-100 flex items-center justify-center">
+                                            <HardDrive className="h-4 w-4" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-slate-800 text-sm">Storage Drives (SSD / HDD)</h3>
+                                            <p className="text-[10px] text-slate-400">Recorded physical disks</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2 overflow-y-auto pr-1 pb-2">
+                                        {storageCatalog.map((item, idx) => (
+                                            <div key={idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-2 text-xs">
+                                                <div className="flex justify-between items-start gap-3">
+                                                    <span className="font-bold text-slate-700 leading-snug break-words">{item.name}</span>
+                                                    <span className="shrink-0 bg-red-100 border border-red-200 text-red-800 font-bold px-2 py-0.5 rounded text-[10px]">
+                                                        {item.count} Deployed
+                                                    </span>
+                                                </div>
+                                                <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                                                    <span>Hosts:</span>
+                                                    {item.hosts.map((host, hIdx) => (
+                                                        <span key={hIdx} className="bg-slate-200/60 px-1.5 py-0.5 rounded text-slate-600 font-medium font-mono">
+                                                            {host}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                            </div>
+                        ) : (
+                            /* Employee Directory management tab view */
+                            <div className="glass-panel p-6 rounded-2xl relative flex flex-col gap-4">
+                                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
+                                <div>
+                                    <h3 className="font-bold text-slate-800 text-sm">Employee Asset Directory</h3>
+                                    <p className="text-[10px] text-slate-500 mt-0.5">Manage corporate employees and edit profile details</p>
+                                </div>
+
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left border-collapse text-xs">
                                         <thead>
                                             <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider font-mono text-[10px]">
-                                                <th className="py-2.5 px-3">Employee Name</th>
-                                                <th className="py-2.5 px-3">Device Model (Motherboard)</th>
-                                                <th className="py-2.5 px-3">Computer Key (Serial)</th>
+                                                <th className="py-2.5 px-3">Employee Details</th>
+                                                <th className="py-2.5 px-3">Assigned Asset Allocation Keys</th>
                                                 <th className="py-2.5 px-3 text-right">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100">
-                                            {specifications.map((spec) => (
-                                                <tr key={spec.id} className="hover:bg-slate-50/50 transition-colors text-slate-700">
+                                            {employeeCatalog.map((emp, idx) => (
+                                                <tr key={idx} className="hover:bg-slate-50/50 transition-colors text-slate-700">
                                                     <td className="py-3.5 px-3">
-                                                        <span className="font-bold text-slate-800 block leading-tight">{spec.employee_name}</span>
-                                                        <span className="text-[10px] text-slate-400">{spec.employee_email}</span>
+                                                        <span className="font-bold text-slate-800 block leading-tight">{emp.name}</span>
+                                                        <span className="text-[10px] text-slate-400">{emp.email}</span>
                                                     </td>
-                                                    <td className="py-3.5 px-3 font-medium text-slate-600">{spec.device_name}</td>
-                                                    <td className="py-3.5 px-3 font-mono text-[10px] text-blue-600 font-semibold">{spec.serial_number}</td>
+                                                    <td className="py-3.5 px-3">
+                                                        <div className="flex flex-col gap-1.5 max-h-[120px] overflow-y-auto pr-1">
+                                                            {emp.devices.map(d => (
+                                                                <span key={d.id} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 rounded-lg px-2 py-0.5 text-blue-700 font-mono text-[10px] w-fit font-semibold">
+                                                                    <Laptop className="h-3 w-3 text-blue-500" />
+                                                                    {d.name} ({d.serial})
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </td>
                                                     <td className="py-3.5 px-3 text-right flex justify-end gap-1.5">
                                                         <button
-                                                            onClick={() => setSelectedSpec(spec)}
+                                                            onClick={() => setEditingEmployee({ old_email: emp.email, name: emp.name, email: emp.email })}
                                                             className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-lg transition-all"
-                                                            title="View Spec Sheet"
+                                                            title="Edit Profile"
                                                         >
-                                                            <Eye className="h-3.5 w-3.5" />
+                                                            <Edit2 className="h-3.5 w-3.5" />
                                                         </button>
                                                         <button
-                                                            onClick={() => handleDeleteSpec(spec.id)}
+                                                            onClick={() => handleDeleteEmployee(emp.email)}
                                                             className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-lg transition-all"
-                                                            title="Delete"
+                                                            title="Delete Employee & Assets"
                                                         >
                                                             <Trash2 className="h-3.5 w-3.5" />
                                                         </button>
@@ -444,221 +659,24 @@ export function Dashboard() {
                                         </tbody>
                                     </table>
                                 </div>
-                            )}
-                        </div>
-                    ) : activeSubTab === 'catalog' ? (
-                        /* Deployed physical hardware catalog view (scrollable lists, no cutoff) */
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
-                            {/* Deployed CPUs */}
-                            <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-4 h-[430px]">
-                                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <div className="h-8 w-8 rounded-lg bg-blue-50 text-blue-500 border border-blue-100 flex items-center justify-center">
-                                        <Cpu className="h-4 w-4" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-slate-800 text-sm">Processors (CPUs)</h3>
-                                        <p className="text-[10px] text-slate-400">Deployed central processors</p>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col gap-2 overflow-y-auto pr-1 pb-2">
-                                    {cpuCatalog.map((item, idx) => (
-                                        <div key={idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-2 text-xs">
-                                            <div className="flex justify-between items-start gap-3">
-                                                <span className="font-bold text-slate-700 leading-snug break-words">{item.name}</span>
-                                                <span className="shrink-0 bg-blue-100 border border-blue-200 text-blue-800 font-bold px-2 py-0.5 rounded text-[10px]">
-                                                    {item.count} Deployed
-                                                </span>
-                                            </div>
-                                            <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
-                                                <span>Hosts:</span>
-                                                {item.hosts.map((host, hIdx) => (
-                                                    <span key={hIdx} className="bg-slate-200/60 px-1.5 py-0.5 rounded text-slate-600 font-medium font-mono">
-                                                        {host}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
-
-                            {/* Deployed Motherboards */}
-                            <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-4 h-[430px]">
-                                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-purple-500/20 to-transparent" />
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <div className="h-8 w-8 rounded-lg bg-purple-50 text-purple-500 border border-purple-100 flex items-center justify-center">
-                                        <Laptop className="h-4 w-4" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-slate-800 text-sm">Motherboards / Devices</h3>
-                                        <p className="text-[10px] text-slate-400">Recorded hardware products</p>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col gap-2 overflow-y-auto pr-1 pb-2">
-                                    {motherboardCatalog.map((item, idx) => (
-                                        <div key={idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-2 text-xs">
-                                            <div className="flex justify-between items-start gap-3">
-                                                <span className="font-bold text-slate-700 leading-snug break-words">{item.name}</span>
-                                                <span className="shrink-0 bg-purple-100 border border-purple-200 text-purple-800 font-bold px-2 py-0.5 rounded text-[10px]">
-                                                    {item.count} Deployed
-                                                </span>
-                                            </div>
-                                            <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
-                                                <span>Hosts:</span>
-                                                {item.hosts.map((host, hIdx) => (
-                                                    <span key={hIdx} className="bg-slate-200/60 px-1.5 py-0.5 rounded text-slate-600 font-medium font-mono">
-                                                        {host}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Deployed RAM configurations */}
-                            <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-4 h-[430px]">
-                                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-500 border border-emerald-100 flex items-center justify-center">
-                                        <Layers className="h-4 w-4" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-slate-800 text-sm">Memory Blocks (RAM)</h3>
-                                        <p className="text-[10px] text-slate-400">Deployed dynamic RAM quantities</p>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col gap-2 overflow-y-auto pr-1 pb-2">
-                                    {ramCatalog.map((item, idx) => (
-                                        <div key={idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-2 text-xs">
-                                            <div className="flex justify-between items-start gap-3">
-                                                <span className="font-bold text-slate-700 leading-snug break-words">{item.name} Configurations</span>
-                                                <span className="shrink-0 bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">
-                                                    {item.count} Deployed
-                                                </span>
-                                            </div>
-                                            <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
-                                                <span>Hosts:</span>
-                                                {item.hosts.map((host, hIdx) => (
-                                                    <span key={hIdx} className="bg-slate-200/60 px-1.5 py-0.5 rounded text-slate-600 font-medium font-mono">
-                                                        {host}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Deployed Storage Drives */}
-                            <div className="glass-panel p-5 rounded-2xl relative flex flex-col gap-4 h-[430px]">
-                                <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-red-500/20 to-transparent" />
-                                <div className="flex items-center gap-2 shrink-0">
-                                    <div className="h-8 w-8 rounded-lg bg-red-50 text-red-500 border border-red-100 flex items-center justify-center">
-                                        <HardDrive className="h-4 w-4" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-slate-800 text-sm">Storage Drives (SSD / HDD)</h3>
-                                        <p className="text-[10px] text-slate-400">Recorded physical disks</p>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col gap-2 overflow-y-auto pr-1 pb-2">
-                                    {storageCatalog.map((item, idx) => (
-                                        <div key={idx} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col gap-2 text-xs">
-                                            <div className="flex justify-between items-start gap-3">
-                                                <span className="font-bold text-slate-700 leading-snug break-words">{item.name}</span>
-                                                <span className="shrink-0 bg-red-100 border border-red-200 text-red-800 font-bold px-2 py-0.5 rounded text-[10px]">
-                                                    {item.count} Deployed
-                                                </span>
-                                            </div>
-                                            <div className="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
-                                                <span>Hosts:</span>
-                                                {item.hosts.map((host, hIdx) => (
-                                                    <span key={hIdx} className="bg-slate-200/60 px-1.5 py-0.5 rounded text-slate-600 font-medium font-mono">
-                                                        {host}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                        </div>
-                    ) : (
-                        /* Employee Directory management tab view */
-                        <div className="glass-panel p-6 rounded-2xl relative flex flex-col gap-4">
-                            <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-blue-500/25 to-transparent" />
+                        )}
+                    </>
+                ) : (
+                    !fetchingSpecs && (
+                        <div className="py-16 text-center border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-3 bg-slate-50/50">
+                            <ShieldAlert className="h-10 w-10 text-slate-300" />
                             <div>
-                                <h3 className="font-bold text-slate-800 text-sm">Employee Asset Directory</h3>
-                                <p className="text-[10px] text-slate-500 mt-0.5">Manage corporate employees and edit profile details</p>
-                            </div>
-
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left border-collapse text-xs">
-                                    <thead>
-                                        <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider font-mono text-[10px]">
-                                            <th className="py-2.5 px-3">Employee Details</th>
-                                            <th className="py-2.5 px-3">Assigned Asset Allocation Keys</th>
-                                            <th className="py-2.5 px-3 text-right">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100">
-                                        {employeeCatalog.map((emp, idx) => (
-                                            <tr key={idx} className="hover:bg-slate-50/50 transition-colors text-slate-700">
-                                                <td className="py-3.5 px-3">
-                                                    <span className="font-bold text-slate-800 block leading-tight">{emp.name}</span>
-                                                    <span className="text-[10px] text-slate-400">{emp.email}</span>
-                                                </td>
-                                                <td className="py-3.5 px-3">
-                                                    <div className="flex flex-col gap-1.5 max-h-[120px] overflow-y-auto pr-1">
-                                                        {emp.devices.map(d => (
-                                                            <span key={d.id} className="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-100 rounded-lg px-2 py-0.5 text-blue-700 font-mono text-[10px] w-fit font-semibold">
-                                                                <Laptop className="h-3 w-3 text-blue-500" />
-                                                                {d.name} ({d.serial})
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                </td>
-                                                <td className="py-3.5 px-3 text-right flex justify-end gap-1.5">
-                                                    <button
-                                                        onClick={() => setEditingEmployee({ old_email: emp.email, name: emp.name, email: emp.email })}
-                                                        className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 border border-transparent hover:border-blue-100 rounded-lg transition-all"
-                                                        title="Edit Profile"
-                                                    >
-                                                        <Edit2 className="h-3.5 w-3.5" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeleteEmployee(emp.email)}
-                                                        className="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-100 rounded-lg transition-all"
-                                                        title="Delete Employee & Assets"
-                                                    >
-                                                        <Trash2 className="h-3.5 w-3.5" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                <h3 className="font-semibold text-slate-700">No Inventory Found</h3>
+                                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                                    The specifications list is currently empty. Drop a config <code>.json</code> file above to allocate hardware inventory sheets.
+                                </p>
                             </div>
                         </div>
-                    )}
-                </>
-            )}
+                    )
+                )}
 
-            {totalDevices === 0 && !fetchingSpecs && (
-                <div className="py-16 text-center border border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-3 bg-slate-50/50">
-                    <ShieldAlert className="h-10 w-10 text-slate-300" />
-                    <div>
-                        <h3 className="font-semibold text-slate-700">No Inventory Found</h3>
-                        <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                            The specifications list is currently empty. Drop a config <code>.json</code> file above to allocate hardware inventory sheets.
-                        </p>
-                    </div>
-                </div>
-            )}
+            </div>
 
             {/* SpecCard Popup Overlay */}
             {selectedSpec && (
