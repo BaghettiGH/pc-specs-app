@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+/backend/vendor/
+/backend/node_modules/
+/frontend/node_modules/
+/frontend/dist/
+
+# Configuration and credentials
+.env
+/backend/.env
+.agents/
+.gemini/
+
+# Databases
+/backend/database/*.sqlite
+/backend/database/*.sqlite-journal
+
+# Editor/System caches
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
